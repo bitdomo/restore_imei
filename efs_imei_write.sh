@@ -70,11 +70,6 @@ do
 done
 echo " DONE!"
 
-echo 'AT+GOOGGETIMEISHA\r' > /dev/umts_router & cat /dev/umts_router > /tmp/log
-echo -n "Writing new cpsha to /mnt/vendor/persist/modem/cpsha "
-strings /tmp/log | grep +GOOGGETIMEISHA: | sed 's/^................//' > /mnt/vendor/persist/modem/cpsha
-echo "DONE!"
-
 echo -n "Updating efs_backup partition: "
 echo 'AT+GOOGBACKUPNV\r' > /dev/umts_router
 for i in $(seq 1 5)
