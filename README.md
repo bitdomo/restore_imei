@@ -34,12 +34,12 @@ You can also get the imei numbers read from fastboot mode with `fastboot oem get
 
 The imei numbers entered to start.bat are written back to the **devinfo partition**. This modified devinfo partition is backed because the next step will modify it.
 
-Then the phone reboots to bootloader and `fastboot oem set_config bootmode factory` command is issued. This set a flag on the devinfo partition to boot the phone in factory mode.
+Then the phone reboots to bootloader and `fastboot oem set_config bootmode factory` command is issued. This sets a flag on the devinfo partition to boot the phone in factory mode.
 In factory boodmode we can send the `AT+GOOGGETIMEISHA` command to the modem and read the response with
 
 `echo "AT+GOOGGETIMEISHA\r" > /dev/umts_router & cat /dev/umts_router` command.
 It will return an SHA value that is checked against the content of */mnt/vendor/persist/modem/cpsha* file. If it fails to match then all changes made to the phone are reverted.
-If it is a match then then the script proceeds to write back the imei to the efs with
+If it is a match then the user will be asked to check if their imei numbers are back or not. Simply hitting enter skips writing back the imei number to the efs, if `efs` has been given as anwser then the script proceeds to write back the imei to the efs with
 
 `echo 'AT+GOOGSETNV="CAL.Common.Imei",X,"YY"\r' > /dev/umts_router & cat /dev/umts_router` command to write back imei1 where **X** goes from 0 to 7 and **YY** is two digits of the imei number.
 So if X=0 then this means the first two numbers, if X=1 then this means 3rd and 4th numbers of the imei and so on. Similarly for imei2 the 
@@ -50,7 +50,7 @@ Then we flash back the modified devinfo before the factory bootmode flag was set
 
 ## TODO
 
-### - Don't touch the efs if writing back the original imei numbers fixes the issue.
+### - ~~Don't touch the efs if writing back the original imei numbers fixes the issue.~~
 Throughout my testing, just simply writing back my original imei to the devinfo partition made me get back my imei numbers.
 It might be unnecessary to touch the efs. In case just restoring the imei number does not fix the issue then we proceed to write back the imei number to the efs too.
 
