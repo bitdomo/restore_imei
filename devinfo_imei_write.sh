@@ -1,14 +1,13 @@
 #!/bin/sh
 check_imei() {
     imei=$1
-	echo -n "Checking imei number: "$imei"... "
     case $imei in
-        ''|*[!0-9]*) echo "imei number has nonnumerical character"
+        ''|*[!0-9]*) echo "Imei number has nonnumerical character."
         exit 255
         ;;
     esac
     if [ ${#imei} -ne 15 ]; then
-        echo "imei number has invalid length"
+        echo "Imei number has invalid length."
         exit 255
     fi
     sum=0
@@ -27,19 +26,21 @@ check_imei() {
         fi
     done
     if [ $((($sum+${imei:14:1})%10)) -ne 0 ]; then
-        echo "imei number has invalid Luhn digit"
+        echo "Imei number has invalid Luhn digit."
         exit 255
     fi
 	echo "OK!"
 }
 
 if [ "$#" -ne 2 ]; then
-	echo "Invalid number of arguments"
+	echo "Invalid number of arguments."
     echo "Usage: imei.sh <imei1> <imei2>"
     exit 255
 fi
 
+echo -n "Checking imei1 number... "
 check_imei $1
+echo -n "Checking imei2 number... "
 check_imei $2
 
 echo -n "Writing imei1 and imei2 to devinfo... "
@@ -47,4 +48,8 @@ cp /tmp/devinfo.bak /tmp/devinfo.mod &> /dev/null
 echo -n $1 | dd of=/tmp/devinfo.mod seek=$(($(strings -t d /tmp/devinfo.mod | grep imei1 | sed 's/......$//') + 6)) bs=1 conv=notrunc count=15 &> /dev/null
 echo -n $2 | dd of=/tmp/devinfo.mod seek=$(($(strings -t d /tmp/devinfo.mod | grep imei2 | sed 's/......$//') + 6)) bs=1 conv=notrunc count=15 &> /dev/null
 dd if=/tmp/devinfo.mod of=/dev/block/by-name/devinfo &> /dev/null
+if [ $? -ne 0 ]; then
+        echo "dd if=/tmp/devinfo.mod of=/dev/block/by-name/devinfo FAILED!"
+        exit 255
+fi
 echo "DONE!"
