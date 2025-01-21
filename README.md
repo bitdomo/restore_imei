@@ -11,7 +11,7 @@ Other than that I only had the chance to test it on a Pixel 7 and it worked for 
 
 ## Requirement
 - Latest android platform-tools from Google.
-- Android platform-tools either added to %PATH% or place the script fales to the platform-tools folder.
+- Android platform-tools either added to %PATH% or place the script files to the platform-tools folder.
 - The phone must be rooted.
 - Have USB debugging enabled.
 - Adb shell must have superuser permissions granted.
@@ -21,7 +21,10 @@ I only tested it with magisk. Other rooting methods might work too.
 - You run start.bat
 - Enter imei1 and imei2 numbers your phone had and just let it run.
 
-You can find your original imei numbers on your phone's box.
+You can find your original imei numbers on your phone's box, or on the receipt you got for your phone.
+You can also find imei1 on the sim card tray. From that you can calculate imei2. Remove the last digit from imei1 and increase it by 1. Then type the number you get to https://www.imei.info/calc/ to get the last digit.
+For example, the sim tray reads `111111111111119`. You remove the last digit you get `11111111111111`. Then you increase it by one you get `11111111111112`. Then from the link above you get `111111111111127`.
+
 You can find your backups in the scripts' folder named \<serial number\>-\<date and time\>
 
 ## Technicalities
