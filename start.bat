@@ -1,6 +1,7 @@
 @echo off
 setlocal enabledelayedexpansion
 
+cls
 echo This script can only restore the phone's original imei numbers.
 echo https://github.com/bitdomo/restore_imei
 echo(
@@ -30,14 +31,19 @@ if %ERRORLEVEL%==1 (
 	echo No adb device found or no permission.
     goto :exit
 )
-echo DONE^^!
+if not %ERRORLEVEL%==0 (
+    echo FAIL^^!
+	echo Unknown error.
+    goto :exit
+)
+echo OK^^!
 
 for /f "tokens=2 delims==" %%i in ('"wmic os get localdatetime /value"') do set datetime=%%i
 set foldername=!datetime:~0,14!
 for /f "tokens=* delims=" %%i in ('adb get-serialno') do set serial=%%i
 set foldername=!serial!-!foldername!
 mkdir !foldername!
-if %ERRORLEVEL%==1 (
+if not %ERRORLEVEL%==0 (
     echo Failed to create !foldername! folder.
     goto :exit
 )
@@ -165,7 +171,7 @@ if %ERRORLEVEL%==254 (
 		goto :exit
 	)
 	echo DONE^^!
-	echo|set /p="Rebooting..."
+	echo|set /p="Rebooting... "
 	adb reboot
 	if not !ERRORLEVEL!==0 (
 		echo FAIL^^!
