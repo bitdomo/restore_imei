@@ -11,14 +11,14 @@ Other than that I only had the chance to test it on a Pixel 7 and it worked for 
 
 ## Requirement
 - Latest android platform-tools from Google.
-- Android platform-tools either added to %PATH% or place the script files to the platform-tools folder.
+- Android platform-tools either added to %PATH% on Windows, $PATH on Linux or place the script files to the platform-tools folder.
 - The phone must be rooted.
 - Have USB debugging enabled.
 - Adb shell must have superuser permissions granted.
 
 I only tested it with magisk. Other rooting methods might work too.
 ## Run
-- You run start.bat
+- You run start.bat on Windows, start.sh on Linux
 - Enter imei1 and imei2 numbers your phone had and just let it run.
 
 You can find your original imei numbers on your phone's box, or on the receipt you got for your phone.
@@ -76,7 +76,7 @@ It would be nice to log the entire process if something goes bad then I could de
 ### - Colours and better formatting.
 I want to make it clear what is actually going on with the phone. I thought adding colours could increase visual clarity.
 
-### - Linux support.
+### - ~~Linux support.~~
 I will rewrite start.bat to work on linux. Writing a batch file is quite a challenge itself. Also for some reason the same batch script works differently on another windows machine.
 For example throughout my testings the `echo|set /p="some text"` simply did not work on the person's windows machine who had a Pixel 7 device with zeroed imei number.
 I believe rewriting start.bat to Linux's shell script would eliminate the uncertainty, instability and compatibility issues that come with windows.
