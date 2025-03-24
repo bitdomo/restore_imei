@@ -38,8 +38,8 @@ if not %ERRORLEVEL%==0 (
 )
 echo OK^^!
 
-for /f "tokens=2 delims==" %%i in ('"wmic os get localdatetime /value"') do set datetime=%%i
-set foldername=!datetime:~0,14!
+for /f "delims=" %%i in ('powershell -command "Get-Date -Format yyyyMMddHHmmss"') do set datetime=%%i
+set foldername=!datetime!
 for /f "tokens=* delims=" %%i in ('adb get-serialno') do set serial=%%i
 set foldername=!serial!-!foldername!
 mkdir !foldername!
