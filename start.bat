@@ -93,6 +93,21 @@ if not %ERRORLEVEL%==0 (
 )
 echo DONE^^!
 
+echo|set /p="Backing up persist partition... "
+adb shell "su -c dd if=/dev/block/by-name/persist of=/tmp/persist.bak" 2> NUL
+if not %ERRORLEVEL%==0 (
+    echo FAIL^^!
+	echo adb shell "su -c dd if=/dev/block/by-name/persist of=/tmp/persist.bak" FAILED^^!
+    goto :exit
+)
+adb pull /tmp/persist.bak !foldername!\persist.bak 2> NUL
+if not %ERRORLEVEL%==0 (
+    echo FAIL^^!
+	echo adb pull /tmp/persist.bak !foldername!\persist.bak FAILED^^!
+    goto :exit
+)
+echo DONE^^!
+
 echo|set /p="Pushing devinfo_imei_write.sh to /tmp... "
 adb push devinfo_imei_write.sh /tmp 2> NUL
 if not %ERRORLEVEL%==0 (
