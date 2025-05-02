@@ -155,43 +155,6 @@ echo|set /p="Waiting for 15 seconds for the phone to boot up... "
 ping -n 15 127.0.0.1 > nul
 echo DONE^^!
 
-adb shell "su -c 'if [[ $(cat /mnt/vendor/persist/modem/cpsha) ^!= $(echo \"AT+GOOGGETIMEISHA\r\" > /dev/umts_router & cat /dev/umts_router | strings | grep +GOOGGETIMEISHA: | sed \"s/^................//\") ]]; then echo \"^^!^^!^^!IMEI sha check failed^^!^^!^^!\"; exit 254; fi'"
-if %ERRORLEVEL%==254 (
-    echo|set /p="Reverting changes... "
-	adb push !foldername!\devinfo.bak /tmp 2> NUL
-	if not !ERRORLEVEL!==0 (
-		echo FAIL^^!
-		echo adb push !foldername!\devinfo.bak /tmp FAILED^^!
-		goto :exit
-	)
-	adb shell "su -c dd if=/tmp/devinfo.bak of=/dev/block/by-name/devinfo" 2> NUL
-	if not !ERRORLEVEL!==0 (
-		echo FAIL^^!
-		echo adb shell "su -c dd if=/tmp/devinfo.bak of=/dev/block/by-name/devinfo" FAILED^^!
-		goto :exit
-	)
-	echo DONE^^!
-	echo|set /p="Rebooting... "
-	adb reboot
-	if not !ERRORLEVEL!==0 (
-		echo FAIL^^!
-		echo adb reboot FAILED^^!
-		goto :exit
-	)
-	echo DONE^^!
-	goto :exit
-)
-
-echo --------------------------------------------------------------------------------
-echo Check if your imei numbers are back.
-echo If all good then hit enter to disable factory bootmode.
-echo If your imei numbers are still wrong then type: efs
-echo --------------------------------------------------------------------------------
-set /p anwser=Your anwser: 
-if /i not "%anwser%"=="efs" (
-    goto :disable-factory-bootmode
-)
-
 echo|set /p="Pushing efs_imei_write.sh to /tmp... "
 adb push efs_imei_write.sh /tmp 2> NUL
 if not %ERRORLEVEL%==0 (
@@ -213,7 +176,6 @@ adb shell su -c /tmp/efs_imei_write.sh %imei1% %imei2%
 echo --------------------------------------------------------------------------------
 echo Script efs_imei_write.sh has finished running.
 
-:disable-factory-bootmode
 echo|set /p="Pushing devinfo.mod... "
 adb push !foldername!\devinfo.mod /tmp 2> NUL
 if not %ERRORLEVEL%==0 (

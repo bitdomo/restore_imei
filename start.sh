@@ -48,7 +48,7 @@ if [ "$?" -ne 0 ]; then
     exit
 fi
 
-for partition in efs efs_backup devinfo
+for partition in efs efs_backup devinfo persist
 do
     echo -n "Backing up $partition partition... "
     adb shell "su -c dd if=/dev/block/by-name/$partition of=/tmp/$partition.bak" &> /dev/null
@@ -126,60 +126,26 @@ echo -n "Waiting for 15 seconds for the phone to boot up... "
 sleep 15
 echo "DONE!"
 
-adb shell "su -c 'if [[ \$(cat /mnt/vendor/persist/modem/cpsha) != \$(echo \"AT+GOOGGETIMEISHA\r\" > /dev/umts_router & cat /dev/umts_router | strings | grep +GOOGGETIMEISHA: | sed \"s/^................//\") ]]; then echo "\!\!\!IMEI sha check failed\!\!\!"; exit 254; fi'"
-if [ "$?" -eq 254 ]; then
-    echo -n "Reverting changes... "
-    adb push $foldername/devinfo.bak /tmp &> /dev/null
-    if [ "$?" -ne 0 ]; then
-        echo "FAIL!"
-        echo "adb push $foldername/devinfo.bak /tmp FAILED!"
-        exit
-    fi
-    adb shell "su -c dd if=/tmp/devinfo.bak of=/dev/block/by-name/devinfo" &> /dev/null
-    if [ "$?" -ne 0 ]; then
-        echo "FAIL!"
-        echo "adb shell \"su -c dd if=/tmp/devinfo.bak of=/dev/block/by-name/devinfo\" FAILED!"
-        exit
-    fi
-    echo "DONE!"
-    echo -n "Rebooting... "
-    adb reboot
-    if [ "$?" -ne 0 ]; then
-        echo "FAIL!"
-        echo "adb reboot FAILED!"
-        exit
-    fi
-    echo "DONE!"
-    exit
+echo -n "Pushing efs_imei_write.sh to /tmp... "
+adb push efs_imei_write.sh /tmp &> /dev/null
+if [ "$?" -ne 0 ]; then
+	echo "FAIL!"
+	echo "adb push efs_imei_write.sh FAILED!"
+	exit
 fi
+echo "DONE!"
 
-echo "--------------------------------------------------------------------------------"
-echo "Check if your imei numbers are back."
-echo "If all good then hit enter to disable factory bootmode."
-echo "If your imei numbers are still wrong then type: efs"
-echo "--------------------------------------------------------------------------------"
-read -p "Your anwser: " anwser
-if [ "$anwser" == "efs" ]; then
-    echo -n "Pushing efs_imei_write.sh to /tmp... "
-    adb push efs_imei_write.sh /tmp &> /dev/null
-    if [ "$?" -ne 0 ]; then
-        echo "FAIL!"
-        echo "adb push efs_imei_write.sh FAILED!"
-        exit
-    fi
-    echo "DONE!"
-    echo "Running efs_imei_write.sh."
-    echo "-------------------------------efs_imei_write.sh--------------------------------"
-    adb shell chmod +x /tmp/efs_imei_write.sh
-    if [ "$?" -ne 0 ]; then
-        echo "FAIL!"
-        echo "adb shell chmod +x /tmp/efs_imei_write.sh FAILED!"
-        exit
-    fi
-    adb shell su -c /tmp/efs_imei_write.sh $imei1 $imei2
-    echo "--------------------------------------------------------------------------------"
-    echo "Script efs_imei_write.sh has finished running."
+echo "Running efs_imei_write.sh."
+echo "-------------------------------efs_imei_write.sh--------------------------------"
+adb shell chmod +x /tmp/efs_imei_write.sh
+if [ "$?" -ne 0 ]; then
+	echo "FAIL!"
+	echo "adb shell chmod +x /tmp/efs_imei_write.sh FAILED!"
+	exit
 fi
+adb shell su -c /tmp/efs_imei_write.sh $imei1 $imei2
+echo "--------------------------------------------------------------------------------"
+echo "Script efs_imei_write.sh has finished running."
 
 echo -n "Pushing devinfo.mod... "
 adb push $foldername/devinfo.mod /tmp &> /dev/null
